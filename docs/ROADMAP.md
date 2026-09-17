@@ -20,10 +20,11 @@ from [CLAUDE.md](../CLAUDE.md)).
       `LSUIElement` in a SwiftPM executable), placeholder clock icon, Quit
       menu item.
       Validated manually: app launches, sits in the menu bar, quits cleanly.
-- [ ] **3. Settings model** — `AppSettings` backed by `UserDefaults` (log
+- [x] **3. Settings model** — `AppSettings` backed by `UserDefaults` (log
       folder + interval, with defaults).
-      Validate via unit tests: default values, persistence round-trip,
-      interval snapping to 25/40/60/90.
+      Validated via unit tests in `CheckpointTests`: default values,
+      persistence round-trip, the four allowed interval values, fallback
+      to default on an invalid stored interval. CI now runs `swift test`.
 - [ ] **4. Settings UI** — SwiftUI Settings scene wired to `AppSettings`:
       folder picker (`NSOpenPanel`), 4-stop slider.
       Validate manually against the running app.
@@ -58,8 +59,8 @@ from [CLAUDE.md](../CLAUDE.md)).
 
 ## Validating every PR
 
-- CI runs `swift build` from PR 1 onward, and `swift test` once a test
-  target exists (from PR 3).
+- CI runs `swift build` from PR 1 onward, and `swift test` from PR 3
+  onward.
 - Every PR description includes manual verification steps, plus a
   screenshot for anything UI-visible.
 - Branch protection on `main` requires the build to pass before merge.
