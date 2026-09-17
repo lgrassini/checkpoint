@@ -35,9 +35,10 @@ Settings persist via `UserDefaults`.
 
 ## Platform & tech constraints
 
-- **Swift + SwiftUI/AppKit only.** No third-party dependencies, no Swift
-  Package Manager external packages. Only Apple frameworks (SwiftUI, AppKit,
-  Foundation, Combine as needed).
+- **Swift + SwiftUI/AppKit only.** No third-party dependencies — the project
+  is structured as a Swift Package (see Project structure below) purely as
+  a build-format choice, but it declares zero external package dependencies.
+  Only Apple frameworks (SwiftUI, AppKit, Foundation, Combine as needed).
 - **Native "Mac-assed" feel**: this is the top design priority. Standard
   macOS conventions throughout:
   - Menu bar extra using `MenuBarExtra` (SwiftUI, macOS 13+) or `NSStatusItem`
@@ -55,35 +56,40 @@ Settings persist via `UserDefaults`.
     prompts).
 - **Lightweight**: minimal background work — a single timer, no polling
   loops, no unnecessary observers.
-- Target a reasonably recent macOS baseline (e.g. macOS 13 Ventura+) to allow
-  use of modern SwiftUI APIs like `MenuBarExtra`. Confirm minimum deployment
-  target before first build.
+- Minimum deployment target: **macOS 14 Sonoma**.
 
 ## File format details (to confirm — see Open Questions)
 
 Log file naming: `YYYY-MM-DD-Checkpoint.txt` in the configured folder, one
 file per calendar day, created on first entry of the day.
 
-## Project structure (proposed)
+## Project structure
 
-Standard Xcode app target, no external package dependencies:
+Swift Package (`Package.swift`), executable target, no external
+dependencies. Opens and runs directly in Xcode via "Open Package...":
 
 ```
 Checkpoint/
-  Checkpoint.xcodeproj
-  Checkpoint/
-    CheckpointApp.swift        // App entry point, MenuBarExtra / status item
-    AppState.swift             // Timer logic, interval state, orchestration
+  Package.swift
+  Sources/Checkpoint/
+    main.swift / CheckpointApp.swift  // App entry point, MenuBarExtra / status item
+    AppState.swift                    // Timer logic, interval state, orchestration
     PromptWindow/
-      PromptView.swift         // The hourly entry prompt UI
+      PromptView.swift                // The interval entry prompt UI
     Settings/
-      SettingsView.swift       // Log folder + interval slider
+      SettingsView.swift              // Log folder + interval slider
     Logging/
-      CheckpointLogger.swift   // File writing, date/filename logic
+      CheckpointLogger.swift          // File writing, date/filename logic
     Resources/
-      Assets.xcassets          // Menu bar icon, app icon
+      Assets.xcassets                 // Menu bar icon, app icon
+  Tests/CheckpointTests/              // Unit tests (added PR 3)
   CLAUDE.md
 ```
+
+Bundle identifier: `com.warp.Checkpoint`. Code signing: sign-to-run-locally
+for now (no Apple Developer Team). Packaging the built executable into a
+distributable `.app` bundle (Info.plist embedding, icon, bundle assembly) is
+its own later step, not required for local development or CI builds.
 
 ## PR sequence
 
@@ -112,8 +118,8 @@ current plan and status.
    (e.g. a clock/checkmark), custom icon, or does it show a countdown/text?
 7. **Entry validation**: is an empty submission allowed (logs nothing) or
    blocked (disable submit until text is entered)?
-8. **App icon / bundle identifier / product name**: needed for the Xcode
-   project setup (e.g. `com.<you>.Checkpoint`).
+8. **App icon**: still needed (bundle identifier and product name are
+   resolved — see Project structure).
 
 ## Explicitly out of scope (per spec)
 
