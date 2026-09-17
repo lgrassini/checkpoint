@@ -7,11 +7,11 @@ from [CLAUDE.md](../CLAUDE.md)).
 
 ## Foundational
 
-- [ ] **1. Repo scaffolding** — Xcode project skeleton (empty menu-bar app
-      target, bundle ID, deployment target), `.gitignore` for
-      Xcode/DerivedData, and a GitHub Actions workflow running
-      `xcodebuild build` on every PR. No functionality yet — just a green
-      CI build on an empty app.
+- [x] **1. Repo scaffolding** — Swift Package skeleton (empty executable
+      target, `com.warp.Checkpoint`, macOS 14 deployment target),
+      `.gitignore` for SwiftPM/Xcode build artifacts, and a GitHub Actions
+      workflow running `swift build` on every PR. No functionality yet —
+      just a green CI build on an empty app.
 
 ## Core pieces, built independently
 
@@ -56,8 +56,8 @@ from [CLAUDE.md](../CLAUDE.md)).
 
 ## Validating every PR
 
-- CI runs `xcodebuild build` from PR 1 onward, and `xcodebuild test` once a
-  test target exists (from PR 3).
+- CI runs `swift build` from PR 1 onward, and `swift test` once a test
+  target exists (from PR 3).
 - Every PR description includes manual verification steps, plus a
   screenshot for anything UI-visible.
 - Branch protection on `main` requires the build to pass before merge.
