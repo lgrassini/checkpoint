@@ -29,16 +29,22 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(settings.interval, .sixtyMinutes)
     }
 
-    func testLogFolderRoundTrip() {
+    func testLogFolderPersistsAcrossInstances() {
         let custom = URL(fileURLWithPath: "/tmp/MyCheckpoints", isDirectory: true)
         settings.logFolder = custom
         XCTAssertEqual(settings.logFolder, custom)
+
+        let reloaded = AppSettings(defaults: defaults)
+        XCTAssertEqual(reloaded.logFolder, custom)
     }
 
-    func testIntervalRoundTripForEveryAllowedValue() {
+    func testIntervalPersistsAcrossInstancesForEveryAllowedValue() {
         for interval in CheckpointInterval.allCases {
             settings.interval = interval
             XCTAssertEqual(settings.interval, interval)
+
+            let reloaded = AppSettings(defaults: defaults)
+            XCTAssertEqual(reloaded.interval, interval)
         }
     }
 
@@ -46,8 +52,9 @@ final class AppSettingsTests: XCTestCase {
         XCTAssertEqual(Set(CheckpointInterval.allCases.map(\.minutes)), [25, 40, 60, 90])
     }
 
-    func testInvalidStoredIntervalFallsBackToDefault() {
+    func testInvalidStoredIntervalFallsBackToDefaultOnLoad() {
         defaults.set(999, forKey: "intervalMinutes")
-        XCTAssertEqual(settings.interval, AppSettings.defaultInterval)
+        let reloaded = AppSettings(defaults: defaults)
+        XCTAssertEqual(reloaded.interval, AppSettings.defaultInterval)
     }
 }
