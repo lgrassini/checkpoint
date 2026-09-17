@@ -15,9 +15,11 @@ from [CLAUDE.md](../CLAUDE.md)).
 
 ## Core pieces, built independently
 
-- [ ] **2. Menu bar shell** — `MenuBarExtra`/`NSStatusItem`, `LSUIElement`
-      (no Dock icon), placeholder icon, Quit menu item.
-      Validate manually: app launches, sits in the menu bar, quits cleanly.
+- [x] **2. Menu bar shell** — `MenuBarExtra`, Dock icon hidden via
+      `NSApp.setActivationPolicy(.accessory)` (no Info.plist to set
+      `LSUIElement` in a SwiftPM executable), placeholder clock icon, Quit
+      menu item.
+      Validated manually: app launches, sits in the menu bar, quits cleanly.
 - [ ] **3. Settings model** — `AppSettings` backed by `UserDefaults` (log
       folder + interval, with defaults).
       Validate via unit tests: default values, persistence round-trip,
