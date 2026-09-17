@@ -6,11 +6,22 @@ struct CheckpointApp: App {
 
     var body: some Scene {
         MenuBarExtra("Checkpoint", systemImage: "clock") {
+            SettingsLink {
+                Text("Settings…")
+            }
+            .keyboardShortcut(",")
+
+            Divider()
+
             Button("Quit Checkpoint") {
                 NSApplication.shared.terminate(nil)
             }
             .keyboardShortcut("q")
         }
         .menuBarExtraStyle(.menu)
+
+        Settings {
+            SettingsView(settings: .shared)
+        }
     }
 }
