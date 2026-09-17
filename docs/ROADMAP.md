@@ -25,9 +25,11 @@ from [CLAUDE.md](../CLAUDE.md)).
       Validated via unit tests in `CheckpointTests`: default values,
       persistence round-trip, the four allowed interval values, fallback
       to default on an invalid stored interval. CI now runs `swift test`.
-- [ ] **4. Settings UI** — SwiftUI Settings scene wired to `AppSettings`:
-      folder picker (`NSOpenPanel`), 4-stop slider.
-      Validate manually against the running app.
+- [x] **4. Settings UI** — SwiftUI Settings scene wired to `AppSettings`:
+      folder picker (`NSOpenPanel`, directories only, can create folders),
+      4-stop slider. Reachable via a Settings… item (⌘,) in the menu bar
+      menu.
+      Validated manually against the running app.
 - [ ] **5. CheckpointLogger** — filename-from-date logic, folder creation,
       timestamped append.
       Validate via unit tests writing to a temp directory (most
