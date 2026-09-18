@@ -44,10 +44,15 @@ from [CLAUDE.md](../CLAUDE.md)).
       Validated manually: multi-line entry, window resizes and the text
       box adapts, Cmd+Return submits, remembered size/position across
       relaunch.
-- [ ] **7. Timer/orchestration (`AppState`)** — interval scheduling logic,
-      injectable clock if feasible so firing logic is testable without
-      waiting real minutes.
-      Validate via unit tests where possible, manual otherwise.
+- [x] **7. Timer/orchestration (`AppState`)** — interval scheduling behind
+      a `CheckpointScheduling` protocol (`TimerScheduler` wraps a real
+      Foundation `Timer`), so `AppState` reschedules on interval changes
+      and fires `onCheckpointDue` without any test needing to wait on real
+      time.
+      Validated via unit tests with a fake scheduler: initial scheduling,
+      rescheduling on interval change, firing invokes the callback,
+      cancel on deinit. Not yet wired to the prompt/logger (PR 8), so no
+      manual verification needed for this one.
 
 ## Integration
 
