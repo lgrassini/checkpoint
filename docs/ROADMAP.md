@@ -58,14 +58,24 @@ from [CLAUDE.md](../CLAUDE.md)).
 
 - [x] **8. Wire it together** — `AppDelegate` owns `AppState` and wires
       `onCheckpointDue` to `presentCheckpointPrompt()`, which shows the
-      prompt and, on submit, appends via `CheckpointLogger` to
-      `AppSettings.logFolder`. The debug menu item calls the same method
-      directly, since the minimum interval (25 min) makes waiting out a
-      real cycle impractical for manual testing.
-      Validated manually end-to-end: triggered via the debug item, typed
-      a multi-line entry, submitted with Cmd+Return, and confirmed the
-      exact entry landed in the correctly-named/dated file in the
-      configured log folder.
+      prompt and, on submit or skip, appends via `CheckpointLogger` to
+      `AppSettings.logFolder` ("Skipped." for a skip — see open question 1
+      below). The debug menu item calls the same method directly, since
+      the minimum interval (25 min) makes waiting out a real cycle
+      impractical for manual testing.
+
+      Manual testing during this PR also surfaced and fixed two bugs:
+      the prompt's text box didn't reset between presentations (fixed by
+      moving its state into an `ObservableObject` explicitly reset by
+      `PromptWindowController` before each presentation), and the log
+      entry format was reworked to include a per-file date header and
+      correct blank-line spacing.
+
+      Validated manually end-to-end multiple times: triggered via the
+      debug item, typed a multi-line entry, submitted with Cmd+Return,
+      confirmed the entry landed correctly in the file, confirmed the
+      box is empty on reopen and "Log It" enables as text is typed, and
+      confirmed Skip logs "Skipped.".
 
 ## Open-question follow-ups (one decision, one PR each)
 
