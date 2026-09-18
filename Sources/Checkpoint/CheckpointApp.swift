@@ -6,7 +6,7 @@ struct CheckpointApp: App {
     @Environment(\.openSettings) private var openSettings
 
     var body: some Scene {
-        MenuBarExtra("Checkpoint", systemImage: "clock") {
+        MenuBarExtra {
             // A plain SettingsLink doesn't activate the app, so the
             // Settings window could open behind other apps' windows
             // (Checkpoint is an accessory app with no Dock icon to click).
@@ -30,6 +30,10 @@ struct CheckpointApp: App {
                 NSApplication.shared.terminate(nil)
             }
             .keyboardShortcut("q")
+        } label: {
+            Image(systemName: "clock")
+                .opacity(appDelegate.isMenuBarIconVisible ? 1 : 0)
+                .accessibilityLabel("Checkpoint")
         }
         .menuBarExtraStyle(.menu)
 

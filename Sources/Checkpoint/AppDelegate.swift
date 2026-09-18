@@ -1,9 +1,15 @@
 import AppKit
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     let promptWindowController = PromptWindowController()
     private let appState = AppState()
     private let logger = CheckpointLogger()
+
+    // Read by CheckpointApp's MenuBarExtra label. NSApplicationDelegateAdaptor
+    // observes AppDelegate automatically when it's an ObservableObject, so
+    // changing this invalidates the label view like any other @Published.
+    @Published private(set) var isMenuBarIconVisible = true
+    private var blinkTimer: Timer?
 
     // Hides the Dock icon so Checkpoint runs purely as a menu bar utility.
     // A packaged .app would set this via LSUIElement in Info.plist instead;
@@ -12,6 +18,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.accessory)
         appState.onCheckpointDue = { [weak self] in
             self?.presentCheckpointPrompt()
+        }
+        promptWindowController.onFirstKeystroke = { [weak self] in
+            self?.stopBlinking()
+        }
+        promptWindowController.onWindowClosed = { [weak self] in
+            self?.stopBlinking()
         }
     }
 
@@ -24,6 +36,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         if settings.notificationsEnabled {
             NSSound.beep()
+            startBlinking()
         }
 
         promptWindowController.onSubmit = { [weak self] text in
@@ -41,5 +54,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } catch {
             print("Checkpoint: failed to write log entry: \(error)")
         }
+    }
+
+    private func startBlinking() {
+        guard blinkTimer == nil else { return }
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            self?.isMenuBarIconVisible.toggle()
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        blinkTimer = timer
+    }
+
+    private func stopBlinking() {
+        blinkTimer?.invalidate()
+        blinkTimer = nil
+        isMenuBarIconVisible = true
     }
 }
