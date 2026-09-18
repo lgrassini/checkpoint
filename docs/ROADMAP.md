@@ -86,10 +86,17 @@ from [CLAUDE.md](../CLAUDE.md)).
       double-logging). No timeout/auto-skip/snooze, by product decision.
       Validated manually: closed via the titlebar button and confirmed
       "Skipped." was logged.
-- [ ] **10. Sleep/wake timer behavior**
-- [ ] **11. Launch at Login** (`SMAppService`)
-- [ ] **12. Menu bar icon polish**
-- [ ] **13. Empty-submission validation**
+- [x] **10. Sleep/wake timer behavior** — resolved with no code change:
+      Foundation `Timer`'s natural pause-during-sleep/prompt-fire-on-wake
+      behavior is good enough. See CLAUDE.md open question 3.
+- [ ] **11. Launch at Login** (`SMAppService`) — confirmed in scope, not
+      yet implemented.
+- [x] **12. Menu bar icon polish** — resolved by keeping the current
+      plain SF Symbol `clock`, no change made. See CLAUDE.md open
+      question 6.
+- [x] **13. Empty-submission validation** — already resolved as a side
+      effect of PR 6: "Log It"/Cmd+Return are disabled while the trimmed
+      entry is empty. See CLAUDE.md open question 7.
 
 ## Notifications (new scope, added after initial planning)
 

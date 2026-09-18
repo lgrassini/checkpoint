@@ -126,19 +126,24 @@ current plan and status.
 2. **Multiple entries per interval**: can the user reopen the prompt
    manually (e.g. via menu bar click) to log an ad hoc entry outside the
    timer cadence?
-3. **Timer behavior on sleep/wake**: should the interval timer pause while
-   the Mac is asleep, or count wall-clock time (i.e. catch up / fire
-   immediately on wake if overdue)?
-4. **App launch behavior**: should Checkpoint offer a "Launch at Login"
-   toggle (via `SMAppService`, still no third-party deps)? Not in the
-   original spec but common for menu bar utilities — confirm if in scope.
-5. **Notification vs. window**: is the prompt strictly an in-app window
-   (app must be frontmost-ish to see it), or should it also post a macOS
-   notification that deep-links to the prompt?
-6. **Menu bar icon**: what should the status item look like — SF Symbol
-   (e.g. a clock/checkmark), custom icon, or does it show a countdown/text?
-7. **Entry validation**: is an empty submission allowed (logs nothing) or
-   blocked (disable submit until text is entered)?
+3. **Timer behavior on sleep/wake**: resolved — relying on Foundation
+   `Timer`'s natural behavior (no new code). The run loop effectively
+   pauses while the Mac is asleep; on wake, an already-passed fire date
+   triggers promptly and the repeating timer resumes its normal cadence
+   from there. Close enough to "wall-clock, catch up on wake" without
+   needing explicit `NSWorkspace` sleep/wake notification handling.
+4. **App launch behavior**: resolved — yes, in scope. A "Launch at Login"
+   toggle via `SMAppService` is being added (see PR sequence).
+5. **Notification vs. window**: still open. The prompt is strictly an
+   in-app window; PRs 14–16 added a sound + blinking menu bar icon as
+   attention-getters, but not a formal `UNUserNotificationCenter` alert
+   that could deep-link to the prompt from outside the app.
+6. **Menu bar icon**: resolved — keeping the plain SF Symbol `clock`
+   (monochrome, adapts to menu bar light/dark automatically). No custom
+   asset.
+7. **Entry validation**: resolved — blocked. "Log It" (and its Cmd+Return
+   shortcut) is disabled while the trimmed entry is empty; `submit()` also
+   guards against it. Has been the behavior since PR 6.
 8. **App icon**: still needed (bundle identifier and product name are
    resolved — see Project structure).
 
