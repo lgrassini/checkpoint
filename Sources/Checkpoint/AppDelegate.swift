@@ -15,21 +15,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Shows the prompt and, on submit, appends the entry to the
-    /// configured log folder. Also called directly by the "Simulate
-    /// Checkpoint Now (debug)" menu item, so it exercises the exact same
-    /// path the real timer uses.
+    /// Shows the prompt. Submitting or skipping both append an entry to
+    /// the configured log folder ("Skipped." for a skip). Also called
+    /// directly by the "Simulate Checkpoint Now (debug)" menu item, so it
+    /// exercises the exact same path the real timer uses.
     func presentCheckpointPrompt() {
         let settings = AppSettings.shared
 
         promptWindowController.onSubmit = { [weak self] text in
-            do {
-                try self?.logger.append(text, to: settings.logFolder)
-            } catch {
-                print("Checkpoint: failed to write log entry: \(error)")
-            }
+            self?.log(text, to: settings.logFolder)
         }
-        promptWindowController.onCancel = {}
+        promptWindowController.onCancel = { [weak self] in
+            self?.log("Skipped.", to: settings.logFolder)
+        }
         promptWindowController.present(intervalMinutes: settings.interval.minutes)
+    }
+
+    private func log(_ text: String, to folder: URL) {
+        do {
+            try logger.append(text, to: folder)
+        } catch {
+            print("Checkpoint: failed to write log entry: \(error)")
+        }
     }
 }
