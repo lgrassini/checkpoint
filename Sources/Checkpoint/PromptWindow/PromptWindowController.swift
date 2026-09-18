@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 /// Owns the prompt's NSWindow directly (rather than a SwiftUI `Window`
@@ -10,6 +11,7 @@ final class PromptWindowController: NSWindowController, NSWindowDelegate {
     // rootView reassignment doesn't reliably reset @State between
     // presentations, so this is explicitly cleared before each one.
     private let model = PromptModel()
+    private var textCancellable: AnyCancellable?
 
     private let hostingView = NSHostingView(
         rootView: PromptView(model: PromptModel(), intervalMinutes: 60, onSubmit: { _ in }, onCancel: {})
@@ -17,6 +19,13 @@ final class PromptWindowController: NSWindowController, NSWindowDelegate {
 
     var onSubmit: ((String) -> Void)?
     var onCancel: (() -> Void)?
+    /// Fires once per presentation, the first time the user types a
+    /// non-whitespace character. Used to stop the menu bar icon blink.
+    var onFirstKeystroke: (() -> Void)?
+    /// Fires whenever the window closes, however it closes (Log It, Skip,
+    /// or the titlebar button) — the single place to reliably stop the
+    /// blink no matter which path was taken.
+    var onWindowClosed: (() -> Void)?
 
     init() {
         let window = NSWindow(
@@ -59,8 +68,19 @@ final class PromptWindowController: NSWindowController, NSWindowDelegate {
         return true
     }
 
+    // Fires for every close, regardless of how it happened.
+    func windowWillClose(_ notification: Notification) {
+        onWindowClosed?()
+    }
+
     private func updateRootView(intervalMinutes: Int) {
         model.text = ""
+
+        textCancellable = model.$text
+            .first(where: { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })
+            .sink { [weak self] _ in
+                self?.onFirstKeystroke?()
+            }
 
         hostingView.rootView = PromptView(
             model: model,
