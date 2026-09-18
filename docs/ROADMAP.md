@@ -169,8 +169,17 @@ from [CLAUDE.md](../CLAUDE.md)).
       the new window.
       Validated manually by the user against the packaged app: the window
       now reopens after being closed.
-- [ ] **11. Launch at Login** (`SMAppService`) — next up after 19, now
-      that the app can be meaningfully packaged and tested.
+- [x] **11. Launch at Login** (`SMAppService`) — a "Launch Checkpoint at
+      login" checkbox in a new Startup section of Settings. `LaunchAtLogin`
+      wraps `SMAppService.mainApp` behind a `LoginItemService` protocol
+      (testable with a fake); the system registration is the source of
+      truth, so nothing is stored in `UserDefaults` and state is re-read
+      after every change and whenever the Settings window is shown. A
+      registration that needs approval shows a hint pointing at System
+      Settings; errors show inline rather than the box silently flipping
+      back.
+      Validated via 7 unit tests (27 total) and manually by the user
+      against the real `/Applications` install.
 
 ## Validating every PR
 

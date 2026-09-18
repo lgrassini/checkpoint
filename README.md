@@ -38,6 +38,7 @@ swift run
 - **Checkpoint interval** — 25, 40, 60, or 90 minutes.
 - **Notifications** — sound + menu bar icon blink when a checkpoint is due,
   on by default.
+- **Launch at login** — start Checkpoint automatically when you log in.
 
 ## Project docs
 

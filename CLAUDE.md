@@ -32,7 +32,7 @@ log file.
 
 ## Settings
 
-Three settings, exposed via a standard macOS Settings window
+Four settings, exposed via a standard macOS Settings window
 (`Cmd+,` / Settings menu item):
 
 1. **Log folder** — where daily log files are written. Default: `~/Checkpoint/`.
@@ -43,6 +43,12 @@ Three settings, exposed via a standard macOS Settings window
 3. **Notifications** — a checkbox (native `.toggleStyle(.checkbox)`)
    enabling/disabling the sound + menu bar icon blink described above.
    Defaults to on.
+4. **Launch at login** — a checkbox backed by `SMAppService.mainApp`. The
+   system's login-item registration is the source of truth (it can also be
+   changed in System Settings), so it is *not* stored in `UserDefaults`;
+   state is re-read after every change and each time the window is shown.
+   Only works from the packaged `.app` (a bare `swift run` binary has no
+   bundle to register, and shows the error inline).
 
 Settings persist via `UserDefaults`.
 
@@ -96,6 +102,7 @@ Checkpoint/
     CheckpointApp.swift    // App entry point; SwiftUI lifecycle kept only for the main menu (Edit/⌘V)
     AppDelegate.swift      // Menu bar NSStatusItem/NSMenu, icon blink, wiring
     AppState.swift         // Timer logic, interval state, orchestration
+    LaunchAtLogin.swift    // SMAppService-backed login item (behind a protocol for tests)
     PromptWindow/
       PromptView.swift     // The interval entry prompt UI
     Settings/
@@ -149,8 +156,8 @@ current plan and status.
    triggers promptly and the repeating timer resumes its normal cadence
    from there. Close enough to "wall-clock, catch up on wake" without
    needing explicit `NSWorkspace` sleep/wake notification handling.
-4. **App launch behavior**: resolved — yes, in scope. A "Launch at Login"
-   toggle via `SMAppService` is being added (see PR sequence).
+4. **App launch behavior**: resolved — implemented. A "Launch at login"
+   checkbox in Settings, via `SMAppService` (see Settings).
 5. **Notification vs. window**: still open. The prompt is strictly an
    in-app window; PRs 14–16 added a sound + blinking menu bar icon as
    attention-getters, but not a formal `UNUserNotificationCenter` alert
