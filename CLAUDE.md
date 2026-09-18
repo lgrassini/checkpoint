@@ -115,6 +115,14 @@ for now (no Apple Developer Team, so `build-app.sh` ad-hoc signs). Run
 bundle identity (e.g. Launch at Login via `SMAppService`), since the bare
 SwiftPM executable (`swift run`) has no `Info.plist`/bundle of its own.
 
+`build-app.sh` also rewrites the binary's recorded SDK version
+(`vtool -set-build-version`, keeping `minos` at 14.0). SwiftPM otherwise
+records the deployment target as the SDK version, and macOS 26+ only applies
+its new design language (button/control styling) to apps linked against a
+26+ SDK — without this, the packaged app renders in the legacy
+compatibility look. A bare `swift run` binary still has the old value, so
+judge visual/native-look issues against the packaged `.app`, not `swift run`.
+
 ## PR sequence
 
 Development is tracked as a sequence of small, granular, independently
