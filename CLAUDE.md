@@ -54,8 +54,12 @@ Settings persist via `UserDefaults`.
   Only Apple frameworks (SwiftUI, AppKit, Foundation, Combine as needed).
 - **Native "Mac-assed" feel**: this is the top design priority. Standard
   macOS conventions throughout:
-  - Menu bar extra using `MenuBarExtra` (SwiftUI, macOS 13+) or `NSStatusItem`
-    if we need more control than `MenuBarExtra` gives us.
+  - Menu bar icon/menu via a plain `NSStatusItem` + `NSMenu` (owned by
+    `AppDelegate`), not SwiftUI's `MenuBarExtra` — tried `MenuBarExtra`
+    first, but its label didn't re-render in response to `@Published`
+    changes (needed for the icon blink; confirmed via logging that the
+    underlying state *was* updating correctly, SwiftUI just wasn't
+    reflecting it), so this is the "more control" escape hatch.
   - Settings window follows the standard macOS Settings scene pattern
     (`Settings {}` scene in SwiftUI, or a standard preferences window in
     AppKit) — not a custom-chrome window.
@@ -86,16 +90,17 @@ dependencies. Opens and runs directly in Xcode via "Open Package...":
 Checkpoint/
   Package.swift
   Sources/Checkpoint/
-    main.swift / CheckpointApp.swift  // App entry point, MenuBarExtra / status item
-    AppState.swift                    // Timer logic, interval state, orchestration
+    CheckpointApp.swift    // App entry point (just the Settings scene)
+    AppDelegate.swift      // Menu bar NSStatusItem/NSMenu, icon blink, wiring
+    AppState.swift         // Timer logic, interval state, orchestration
     PromptWindow/
-      PromptView.swift                // The interval entry prompt UI
+      PromptView.swift     // The interval entry prompt UI
     Settings/
-      SettingsView.swift              // Log folder + interval slider
+      SettingsView.swift   // Log folder + interval slider
     Logging/
-      CheckpointLogger.swift          // File writing, date/filename logic
+      CheckpointLogger.swift  // File writing, date/filename logic
     Resources/
-      Assets.xcassets                 // Menu bar icon, app icon
+      Assets.xcassets      // App icon (menu bar icon is an SF Symbol)
   Tests/CheckpointTests/              // Unit tests (added PR 3)
   CLAUDE.md
 ```

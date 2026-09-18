@@ -107,10 +107,24 @@ from [CLAUDE.md](../CLAUDE.md)).
       other apps' windows (needed to activate the app before
       `openSettings()`), and Settings UI polish (removed a redundant
       legend, clarified the interval slider's section title).
-- [ ] **16. Blinking menu bar icon** — toggle the status item's icon on a
-      short repeating timer while a checkpoint is unanswered; stop as soon
+- [x] **16. Blinking menu bar icon** — toggle the status item's icon on a
+      0.5s repeating timer while a checkpoint is unanswered; stops as soon
       as the user types the first character in the prompt, or
       submits/skips/closes it.
+
+      Required dropping SwiftUI's `MenuBarExtra` for a plain `NSStatusItem`
+      + `NSMenu` owned by `AppDelegate`: `MenuBarExtra`'s label wasn't
+      re-rendering on `@Published` changes (confirmed via logging that the
+      underlying timer/state genuinely was toggling — SwiftUI just wasn't
+      reflecting it in the label). `PromptWindowController` gained
+      `onFirstKeystroke` (fires once, via a Combine subscription on the
+      first non-empty `$text` emission) and `onWindowClosed` (fires from
+      `windowWillClose`, covering all three close paths) to drive when
+      blinking stops.
+
+      Validated manually: icon blinks on checkpoint fire, and stops on
+      each of the three conditions tested individually (first keystroke,
+      Skip, titlebar close).
 
 ## Validating every PR
 
