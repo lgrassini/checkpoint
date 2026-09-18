@@ -79,7 +79,13 @@ from [CLAUDE.md](../CLAUDE.md)).
 
 ## Open-question follow-ups (one decision, one PR each)
 
-- [ ] **9. Missed/skipped checkpoint behavior**
+- [x] **9. Missed/skipped checkpoint behavior** — closing the prompt via
+      the titlebar button (or Cmd+W) now logs "Skipped.", same as
+      clicking Skip, via `NSWindowDelegate.windowShouldClose(_:)` (only
+      fires for user-initiated closes, not our own `close()` calls, so no
+      double-logging). No timeout/auto-skip/snooze, by product decision.
+      Validated manually: closed via the titlebar button and confirmed
+      "Skipped." was logged.
 - [ ] **10. Sleep/wake timer behavior**
 - [ ] **11. Launch at Login** (`SMAppService`)
 - [ ] **12. Menu bar icon polish**

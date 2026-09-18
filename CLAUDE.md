@@ -105,11 +105,11 @@ current plan and status.
 
 ## Open questions (need your input before/while building)
 
-1. **Missed/skipped checkpoints**: resolved for explicit Skip — logs a
-   `Skipped.` entry (see Core behavior). Still open: the prompt currently
-   never times out (no auto-skip/re-prompt/snooze if left open), and
-   closing the window via the titlebar button bypasses Skip's logging
-   entirely (silent, logs nothing) — needs a decision.
+1. **Missed/skipped checkpoints**: resolved. Explicit Skip and closing the
+   window via the titlebar button (or Cmd+W) both log a `Skipped.` entry
+   (see Core behavior). By product decision, the prompt intentionally has
+   no timeout, auto-skip, or snooze — it stays open indefinitely if
+   ignored, since the minimum 25-minute interval makes that low cost.
 2. **Multiple entries per interval**: can the user reopen the prompt
    manually (e.g. via menu bar click) to log an ad hoc entry outside the
    timer cadence?
