@@ -8,8 +8,15 @@ import SwiftUI
 /// released) reopens reliably — the same approach PromptWindowController
 /// already uses.
 final class SettingsWindowController: NSWindowController {
-    init(settings: AppSettings = .shared) {
-        let window = NSWindow(contentViewController: NSHostingController(rootView: SettingsView(settings: settings)))
+    private let launchAtLogin: LaunchAtLogin
+
+    init(settings: AppSettings = .shared, launchAtLogin: LaunchAtLogin = LaunchAtLogin()) {
+        self.launchAtLogin = launchAtLogin
+        let window = NSWindow(
+            contentViewController: NSHostingController(
+                rootView: SettingsView(settings: settings, launchAtLogin: launchAtLogin)
+            )
+        )
         window.title = "Settings"
         window.styleMask = [.titled, .closable]
         window.isReleasedWhenClosed = false
@@ -28,6 +35,9 @@ final class SettingsWindowController: NSWindowController {
     }
 
     func show() {
+        // The window is reused rather than recreated, so re-read the login
+        // item state in case it was changed in System Settings meanwhile.
+        launchAtLogin.refresh()
         NSApp.activate(ignoringOtherApps: true)
         showWindow(nil)
         window?.makeKeyAndOrderFront(nil)

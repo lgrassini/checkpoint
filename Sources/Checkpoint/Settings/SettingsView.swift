@@ -3,6 +3,7 @@ import AppKit
 
 struct SettingsView: View {
     @ObservedObject var settings: AppSettings
+    @ObservedObject var launchAtLogin: LaunchAtLogin
 
     private static let intervals = CheckpointInterval.allCases
 
@@ -39,9 +40,32 @@ struct SettingsView: View {
                 Toggle("Play a sound and blink the menu bar icon", isOn: $settings.notificationsEnabled)
                     .toggleStyle(.checkbox)
             }
+
+            Section("Startup") {
+                Toggle("Launch Checkpoint at login", isOn: launchAtLoginBinding)
+                    .toggleStyle(.checkbox)
+
+                if launchAtLogin.needsApproval {
+                    Text("Approve Checkpoint in System Settings > General > Login Items.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                if let errorMessage = launchAtLogin.errorMessage {
+                    Text(errorMessage)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+            }
         }
         .padding(20)
         .frame(width: 380)
+    }
+
+    private var launchAtLoginBinding: Binding<Bool> {
+        Binding(
+            get: { launchAtLogin.isEnabled },
+            set: { launchAtLogin.setEnabled($0) }
+        )
     }
 
     private var intervalIndexBinding: Binding<Double> {
