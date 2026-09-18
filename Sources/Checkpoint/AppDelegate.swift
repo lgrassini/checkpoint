@@ -22,6 +22,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func presentCheckpointPrompt() {
         let settings = AppSettings.shared
 
+        if settings.notificationsEnabled {
+            NSSound.beep()
+        }
+
         promptWindowController.onSubmit = { [weak self] text in
             self?.log(text, to: settings.logFolder)
         }
