@@ -5,7 +5,7 @@ import SwiftUI
 /// scene) so it can use `setFrameAutosaveName`, which persists the user's
 /// chosen size and position across launches — SwiftUI's Window scene has
 /// no equivalent for this.
-final class PromptWindowController: NSWindowController {
+final class PromptWindowController: NSWindowController, NSWindowDelegate {
     // Owned here rather than as @State in PromptView: NSHostingView's
     // rootView reassignment doesn't reliably reset @State between
     // presentations, so this is explicitly cleared before each one.
@@ -35,6 +35,7 @@ final class PromptWindowController: NSWindowController {
         // Must come after super.init() (needs `self`) and after the window
         // exists; restores the last saved frame if one is present.
         window.setFrameAutosaveName("PromptWindow")
+        window.delegate = self
         updateRootView(intervalMinutes: 60)
     }
 
@@ -48,6 +49,14 @@ final class PromptWindowController: NSWindowController {
         NSApp.activate(ignoringOtherApps: true)
         showWindow(nil)
         window?.makeKeyAndOrderFront(nil)
+    }
+
+    // Fires only for user-initiated closes (titlebar button, Cmd+W) — not
+    // for our own close() calls after Skip/Log It, which don't go through
+    // performClose. Treats a titlebar close the same as Skip.
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        onCancel?()
+        return true
     }
 
     private func updateRootView(intervalMinutes: Int) {
