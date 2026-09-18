@@ -33,6 +33,11 @@ final class CheckpointLoggerTests: XCTestCase {
         XCTAssertEqual(CheckpointLogger.filename(for: date, calendar: utc), "2026-01-05-Checkpoint.txt")
     }
 
+    func testDateHeaderFormat() {
+        let date = date(year: 2026, month: 1, day: 5, hour: 9, minute: 0)
+        XCTAssertEqual(CheckpointLogger.dateHeader(for: date, calendar: utc), "Mon Jan, 5 2026")
+    }
+
     func testAppendCreatesFolderIfMissing() throws {
         XCTAssertFalse(FileManager.default.fileExists(atPath: tempFolder.path))
 
@@ -44,16 +49,21 @@ final class CheckpointLoggerTests: XCTestCase {
         XCTAssertTrue(isDirectory.boolValue)
     }
 
-    func testAppendWritesTimestampedLine() throws {
-        let fileURL = try logger.append(
-            "wrote the roadmap",
-            to: tempFolder,
-            at: date(year: 2026, month: 1, day: 5, hour: 9, minute: 30),
-            calendar: utc
-        )
+    func testAppendToNewFileWritesDateHeaderThenTimestampedEntry() throws {
+        let date = date(year: 2026, month: 1, day: 5, hour: 9, minute: 30)
+        let fileURL = try logger.append("wrote the roadmap", to: tempFolder, at: date, calendar: utc)
 
         let contents = try String(contentsOf: fileURL, encoding: .utf8)
-        XCTAssertEqual(contents, "[09:30] wrote the roadmap\n")
+        XCTAssertEqual(contents, "Mon Jan, 5 2026\n\n[09:30] \nwrote the roadmap\n\n\n")
+    }
+
+    func testMultiLineEntryTextIsPreservedVerbatim() throws {
+        let date = date(year: 2026, month: 1, day: 5, hour: 13, minute: 39)
+        let text = "- Worked on Checkpoint prototype\n- Call with Edu\n- Prepared some lunch"
+        let fileURL = try logger.append(text, to: tempFolder, at: date, calendar: utc)
+
+        let contents = try String(contentsOf: fileURL, encoding: .utf8)
+        XCTAssertEqual(contents, "Mon Jan, 5 2026\n\n[13:39] \n\(text)\n\n\n")
     }
 
     func testAppendUsesDateAsFilename() throws {
@@ -67,7 +77,7 @@ final class CheckpointLoggerTests: XCTestCase {
         XCTAssertEqual(fileURL.lastPathComponent, "2026-03-17-Checkpoint.txt")
     }
 
-    func testSecondAppendOnSameDayAppendsToSameFile() throws {
+    func testSecondAppendOnSameDayAppendsWithoutRepeatingTheHeader() throws {
         let day = { (hour: Int, minute: Int) in
             self.date(year: 2026, month: 1, day: 5, hour: hour, minute: minute)
         }
@@ -77,7 +87,10 @@ final class CheckpointLoggerTests: XCTestCase {
 
         XCTAssertEqual(first, second)
         let contents = try String(contentsOf: second, encoding: .utf8)
-        XCTAssertEqual(contents, "[09:00] first entry\n[10:15] second entry\n")
+        XCTAssertEqual(
+            contents,
+            "Mon Jan, 5 2026\n\n[09:00] \nfirst entry\n\n\n[10:15] \nsecond entry\n\n\n"
+        )
     }
 
     func testEntriesOnDifferentDaysGoToDifferentFiles() throws {
