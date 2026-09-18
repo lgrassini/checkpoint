@@ -145,8 +145,22 @@ from [CLAUDE.md](../CLAUDE.md)).
       path as a Finder double-click, not direct execution), confirmed no
       Dock icon and the menu bar icon/menu work identically to the
       bare-executable dev build.
-- [ ] **11. Launch at Login** (`SMAppService`) — next up, now that the
-      app can be meaningfully packaged and tested.
+- [x] **18. Native appearance on macOS 26** — buttons/controls looked
+      like the legacy (pre-Tahoe) style because SwiftPM records the
+      deployment target (14.0) as the *SDK* version in the Mach-O
+      build-version load command, and macOS 26 only applies the new design
+      language to apps linked against a 26+ SDK. `build-app.sh` now
+      rewrites that field (`vtool -set-build-version`) to the SDK the app
+      was actually compiled with, keeping `minos` at 14.0. Only affects
+      the packaged `.app`; a bare `swift run` binary still shows the
+      legacy look.
+      Validated: `vtool -show-build` reports `minos 14.0 / sdk 27.0`, the
+      signature verifies, and the user confirmed the prompt's
+      Skip/Log It buttons now match the native flat-gray/accent styling.
+- [ ] **19. Settings window won't reopen after being closed** — bug found
+      while using the installed app.
+- [ ] **11. Launch at Login** (`SMAppService`) — next up after 19, now
+      that the app can be meaningfully packaged and tested.
 
 ## Validating every PR
 

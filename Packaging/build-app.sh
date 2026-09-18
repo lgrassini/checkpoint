@@ -20,8 +20,22 @@ rm -rf "${APP_BUNDLE}"
 mkdir -p "${APP_BUNDLE}/Contents/MacOS"
 mkdir -p "${APP_BUNDLE}/Contents/Resources"
 
-cp "${BUILD_DIR}/${APP_NAME}" "${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
+EXECUTABLE="${APP_BUNDLE}/Contents/MacOS/${APP_NAME}"
+cp "${BUILD_DIR}/${APP_NAME}" "${EXECUTABLE}"
 cp "Packaging/Info.plist" "${APP_BUNDLE}/Contents/Info.plist"
+
+# SwiftPM records the deployment target (14.0) as the *SDK* version in the
+# Mach-O build-version load command. macOS 26+ decides whether to apply the
+# new design language from that SDK version, so an app reporting sdk 14.0
+# renders in the legacy compatibility look (old button/control styling).
+# Record the SDK it was actually compiled against instead.
+MIN_OS="$(plutil -extract LSMinimumSystemVersion raw Packaging/Info.plist)"
+SDK_VERSION="$(xcrun --sdk macosx --show-sdk-version)"
+echo "Setting build version: minos ${MIN_OS}, sdk ${SDK_VERSION}..."
+vtool -set-build-version macos "${MIN_OS}" "${SDK_VERSION}" \
+    -replace -output "${EXECUTABLE}.tmp" "${EXECUTABLE}"
+mv "${EXECUTABLE}.tmp" "${EXECUTABLE}"
+chmod +x "${EXECUTABLE}"
 
 echo "Code signing (ad-hoc)..."
 codesign --force --deep --sign - "${APP_BUNDLE}"
