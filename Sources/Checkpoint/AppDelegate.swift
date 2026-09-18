@@ -9,6 +9,7 @@ import AppKit
 // the menu itself.
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let promptWindowController = PromptWindowController()
+    private lazy var settingsWindowController = SettingsWindowController()
     private let appState = AppState()
     private let logger = CheckpointLogger()
 
@@ -97,12 +98,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         return menu
     }
 
+    func showSettings() {
+        settingsWindowController.show()
+    }
+
     @objc private func openSettings() {
-        NSApp.activate(ignoringOtherApps: true)
-        // The standard AppKit-side way to trigger SwiftUI's Settings
-        // scene from outside a SwiftUI View (no @Environment(\.openSettings)
-        // available here).
-        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        showSettings()
     }
 
     @objc private func simulateCheckpoint() {
