@@ -99,9 +99,14 @@ from [CLAUDE.md](../CLAUDE.md)).
       Settings UI.
       Validated via unit tests (default value, persistence) and manually
       against the running Settings window.
-- [ ] **15. Sound on checkpoint** — play `NSSound.beep()` (the user's own
+- [x] **15. Sound on checkpoint** — play `NSSound.beep()` (the user's own
       system alert sound) when a checkpoint fires and notifications are
       enabled. Native, no bundled audio.
+      Validated manually against the running app. Also fixed, based on
+      manual-test feedback along the way: Settings window opening behind
+      other apps' windows (needed to activate the app before
+      `openSettings()`), and Settings UI polish (removed a redundant
+      legend, clarified the interval slider's section title).
 - [ ] **16. Blinking menu bar icon** — toggle the status item's icon on a
       short repeating timer while a checkpoint is unanswered; stop as soon
       as the user types the first character in the prompt, or
