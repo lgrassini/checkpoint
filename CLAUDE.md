@@ -20,14 +20,19 @@ log file.
     a blank line after the timestamp, two trailing blank lines separating it
     from the next entry.
   - The prompt window closes and the timer resets for the next interval.
-- Clicking "Skip" (or Escape) logs a `Skipped.` entry in the same format,
-  rather than logging nothing. Dismissing the window via the titlebar close
-  button instead of Skip is not yet handled the same way — still open, see
-  Open Questions.
+- Clicking "Skip" (or Escape), or closing the window via the titlebar
+  button (or Cmd+W), both log a `Skipped.` entry in the same format,
+  rather than logging nothing.
+- **Notifications** (opt-out via Settings, on by default): when a
+  checkpoint fires,
+  - plays `NSSound.beep()` (the user's own configured system alert sound —
+    respects their System Settings volume/mute; no bundled audio), and
+  - blinks the menu bar icon on a short repeating timer, until the user
+    types the first character into the prompt, or submits/skips/closes it.
 
 ## Settings
 
-Two settings only, exposed via a standard macOS Settings window
+Three settings, exposed via a standard macOS Settings window
 (`Cmd+,` / Settings menu item):
 
 1. **Log folder** — where daily log files are written. Default: `~/Checkpoint/`.
@@ -35,6 +40,9 @@ Two settings only, exposed via a standard macOS Settings window
    picker (`NSOpenPanel`, directories only).
 2. **Checkpoint interval** — a slider with four discrete stops: **25, 40, 60,
    90 minutes**. Not a freeform slider — snap to these four values only.
+3. **Notifications** — a checkbox (native `.toggleStyle(.checkbox)`)
+   enabling/disabling the sound + menu bar icon blink described above.
+   Defaults to on.
 
 Settings persist via `UserDefaults`.
 
