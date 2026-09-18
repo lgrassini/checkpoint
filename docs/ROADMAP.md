@@ -35,10 +35,15 @@ from [CLAUDE.md](../CLAUDE.md)).
       Validated via unit tests writing to a temp directory: filename
       formatting, folder auto-creation, line format, same-day append,
       different-day files.
-- [ ] **6. Prompt window UI** — `PromptView` alone, triggered by a
-      temporary "Test Prompt" debug menu item (not yet wired to the real
-      timer).
-      Validate manually, screenshot in the PR description.
+- [x] **6. Prompt window UI** — `PromptView` (multi-line `TextEditor`,
+      Skip/Log It), presented via `PromptWindowController` (an AppKit
+      `NSWindowController` using `setFrameAutosaveName` so the window's
+      size/position persist across launches — SwiftUI's `Window` scene has
+      no equivalent). Triggered by a temporary "Test Prompt" debug menu
+      item (not yet wired to the real timer).
+      Validated manually: multi-line entry, window resizes and the text
+      box adapts, Cmd+Return submits, remembered size/position across
+      relaunch.
 - [ ] **7. Timer/orchestration (`AppState`)** — interval scheduling logic,
       injectable clock if feasible so firing logic is testable without
       waiting real minutes.
