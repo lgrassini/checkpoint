@@ -19,7 +19,7 @@ struct SettingsView: View {
                 }
             }
 
-            Section("Checkpoint Interval") {
+            Section("Checkpoint Interval in Minutes") {
                 VStack(alignment: .leading, spacing: 8) {
                     Slider(value: intervalIndexBinding, in: 0...Double(Self.intervals.count - 1), step: 1)
                     HStack {
@@ -32,8 +32,6 @@ struct SettingsView: View {
                             }
                         }
                     }
-                    Text("Checkpoint every \(settings.interval.minutes) minutes")
-                        .foregroundStyle(.secondary)
                 }
             }
 
