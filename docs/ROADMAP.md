@@ -56,11 +56,16 @@ from [CLAUDE.md](../CLAUDE.md)).
 
 ## Integration
 
-- [ ] **8. Wire it together** — timer fires → prompt shows → submit →
-      logger appends → resets. Should be small since 3–7 already did the
-      real work.
-      Validate manually: shrink interval to something short, watch a full
-      cycle end-to-end.
+- [x] **8. Wire it together** — `AppDelegate` owns `AppState` and wires
+      `onCheckpointDue` to `presentCheckpointPrompt()`, which shows the
+      prompt and, on submit, appends via `CheckpointLogger` to
+      `AppSettings.logFolder`. The debug menu item calls the same method
+      directly, since the minimum interval (25 min) makes waiting out a
+      real cycle impractical for manual testing.
+      Validated manually end-to-end: triggered via the debug item, typed
+      a multi-line entry, submitted with Cmd+Return, and confirmed the
+      exact entry landed in the correctly-named/dated file in the
+      configured log folder.
 
 ## Open-question follow-ups (one decision, one PR each)
 
