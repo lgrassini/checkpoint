@@ -13,10 +13,10 @@ struct CheckpointApp: App {
 
             Divider()
 
-            // Temporary: lets the prompt UI be exercised manually before
-            // it's wired to the real interval timer in a later PR.
-            Button("Test Prompt (debug)") {
-                showTestPrompt()
+            // Triggers the exact same path the real interval timer uses,
+            // without waiting out a full interval (minimum 25 minutes).
+            Button("Simulate Checkpoint Now (debug)") {
+                appDelegate.presentCheckpointPrompt()
             }
 
             Divider()
@@ -31,14 +31,5 @@ struct CheckpointApp: App {
         Settings {
             SettingsView(settings: .shared)
         }
-    }
-
-    private func showTestPrompt() {
-        let controller = appDelegate.promptWindowController
-        controller.onSubmit = { text in
-            print("Checkpoint entry (not yet logged to file): \(text)")
-        }
-        controller.onCancel = {}
-        controller.present(intervalMinutes: AppSettings.shared.interval.minutes)
     }
 }

@@ -11,14 +11,19 @@ log file.
 - Runs a repeating timer. When it fires, it shows a small prompt window
   asking "What did you spend the last hour on?" (wording should reference the
   actual configured interval, not hardcode "hour").
-- The user types free text and submits (Return key or a button). On submit:
+- The user types free text and submits (Cmd+Return, or the "Log It" button —
+  plain Return inserts a newline since entries are multi-line). On submit:
   - The entry is appended to `YYYY-MM-DD-Checkpoint.txt` in the configured
     log folder, where the date is *today's* date at submit time.
-  - Each entry is timestamped, e.g. `[HH:mm] entry text`, one entry per line
-    (or per block — see Open Questions).
+  - New files start with a date header (e.g. `Fri Sep, 18 2026`) followed by
+    a blank line. Each entry is written as `[HH:mm] \n<entry text>\n\n\n` —
+    a blank line after the timestamp, two trailing blank lines separating it
+    from the next entry.
   - The prompt window closes and the timer resets for the next interval.
-- If the user dismisses/ignores the prompt, nothing is logged for that
-  interval (see Open Questions on whether to re-prompt or skip).
+- Clicking "Skip" (or Escape) logs a `Skipped.` entry in the same format,
+  rather than logging nothing. Dismissing the window via the titlebar close
+  button instead of Skip is not yet handled the same way — still open, see
+  Open Questions.
 
 ## Settings
 
@@ -58,10 +63,11 @@ Settings persist via `UserDefaults`.
   loops, no unnecessary observers.
 - Minimum deployment target: **macOS 14 Sonoma**.
 
-## File format details (to confirm — see Open Questions)
+## File format details
 
 Log file naming: `YYYY-MM-DD-Checkpoint.txt` in the configured folder, one
-file per calendar day, created on first entry of the day.
+file per calendar day, created on first entry of the day. See Core behavior
+above for the exact entry format.
 
 ## Project structure
 
@@ -99,9 +105,11 @@ current plan and status.
 
 ## Open questions (need your input before/while building)
 
-1. **Missed/skipped checkpoints**: if the user dismisses the prompt or it
-   times out unanswered, do we: (a) skip silently, (b) log a placeholder
-   like `[HH:mm] (skipped)`, or (c) keep re-prompting/snoozing?
+1. **Missed/skipped checkpoints**: resolved for explicit Skip — logs a
+   `Skipped.` entry (see Core behavior). Still open: the prompt currently
+   never times out (no auto-skip/re-prompt/snooze if left open), and
+   closing the window via the titlebar button bypasses Skip's logging
+   entirely (silent, logs nothing) — needs a decision.
 2. **Multiple entries per interval**: can the user reopen the prompt
    manually (e.g. via menu bar click) to log an ad hoc entry outside the
    timer cadence?
