@@ -48,6 +48,18 @@ final class AppSettingsTests: XCTestCase {
         }
     }
 
+    func testDefaultNotificationsEnabledIsTrue() {
+        XCTAssertTrue(settings.notificationsEnabled)
+    }
+
+    func testNotificationsEnabledPersistsAcrossInstances() {
+        settings.notificationsEnabled = false
+        XCTAssertFalse(settings.notificationsEnabled)
+
+        let reloaded = AppSettings(defaults: defaults)
+        XCTAssertFalse(reloaded.notificationsEnabled)
+    }
+
     func testOnlyTheFourSpecifiedIntervalsAreAllowed() {
         XCTAssertEqual(Set(CheckpointInterval.allCases.map(\.minutes)), [25, 40, 60, 90])
     }

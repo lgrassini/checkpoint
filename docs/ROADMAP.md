@@ -91,6 +91,22 @@ from [CLAUDE.md](../CLAUDE.md)).
 - [ ] **12. Menu bar icon polish**
 - [ ] **13. Empty-submission validation**
 
+## Notifications (new scope, added after initial planning)
+
+- [x] **14. Notifications setting** — `notificationsEnabled: Bool` in
+      `AppSettings` (default on), plus a native checkbox
+      (`toggleStyle(.checkbox)`) in a new "Notifications" section of
+      Settings UI.
+      Validated via unit tests (default value, persistence) and manually
+      against the running Settings window.
+- [ ] **15. Sound on checkpoint** — play `NSSound.beep()` (the user's own
+      system alert sound) when a checkpoint fires and notifications are
+      enabled. Native, no bundled audio.
+- [ ] **16. Blinking menu bar icon** — toggle the status item's icon on a
+      short repeating timer while a checkpoint is unanswered; stop as soon
+      as the user types the first character in the prompt, or
+      submits/skips/closes it.
+
 ## Validating every PR
 
 - CI runs `swift build` from PR 1 onward, and `swift test` from PR 3

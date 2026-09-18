@@ -19,10 +19,12 @@ final class AppSettings: ObservableObject {
         isDirectory: true
     )
     static let defaultInterval = CheckpointInterval.sixtyMinutes
+    static let defaultNotificationsEnabled = true
 
     private enum Keys {
         static let logFolderPath = "logFolderPath"
         static let intervalMinutes = "intervalMinutes"
+        static let notificationsEnabled = "notificationsEnabled"
     }
 
     private let defaults: UserDefaults
@@ -33,6 +35,12 @@ final class AppSettings: ObservableObject {
 
     @Published var interval: CheckpointInterval {
         didSet { defaults.set(interval.rawValue, forKey: Keys.intervalMinutes) }
+    }
+
+    /// Whether a checkpoint firing should play a sound and blink the menu
+    /// bar icon (PRs 11/12). Defaults to on.
+    @Published var notificationsEnabled: Bool {
+        didSet { defaults.set(notificationsEnabled, forKey: Keys.notificationsEnabled) }
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -46,5 +54,11 @@ final class AppSettings: ObservableObject {
 
         let rawInterval = defaults.integer(forKey: Keys.intervalMinutes)
         interval = CheckpointInterval(rawValue: rawInterval) ?? Self.defaultInterval
+
+        if let storedNotificationsEnabled = defaults.object(forKey: Keys.notificationsEnabled) as? Bool {
+            notificationsEnabled = storedNotificationsEnabled
+        } else {
+            notificationsEnabled = Self.defaultNotificationsEnabled
+        }
     }
 }
