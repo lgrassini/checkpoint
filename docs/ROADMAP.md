@@ -30,10 +30,11 @@ from [CLAUDE.md](../CLAUDE.md)).
       4-stop slider. Reachable via a Settings… item (⌘,) in the menu bar
       menu.
       Validated manually against the running app.
-- [ ] **5. CheckpointLogger** — filename-from-date logic, folder creation,
+- [x] **5. CheckpointLogger** — filename-from-date logic, folder creation,
       timestamped append.
-      Validate via unit tests writing to a temp directory (most
-      test-worthy piece in the app).
+      Validated via unit tests writing to a temp directory: filename
+      formatting, folder auto-creation, line format, same-day append,
+      different-day files.
 - [ ] **6. Prompt window UI** — `PromptView` alone, triggered by a
       temporary "Test Prompt" debug menu item (not yet wired to the real
       timer).
