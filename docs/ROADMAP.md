@@ -133,10 +133,25 @@ from [CLAUDE.md](../CLAUDE.md)).
       each of the three conditions tested individually (first keystroke,
       Skip, titlebar close).
 
+## Packaging & Launch at Login
+
+- [x] **17. Package as a .app bundle** — `Packaging/Info.plist` +
+      `Packaging/build-app.sh` assemble an ad-hoc-signed
+      `.build/Checkpoint.app`. Prerequisite for item 11 (Launch at
+      Login): `SMAppService` needs a real bundle identifier to register,
+      which the bare SwiftPM executable doesn't have. CI now builds the
+      bundle on every PR too.
+      Validated manually: built the bundle, launched it via `open` (same
+      path as a Finder double-click, not direct execution), confirmed no
+      Dock icon and the menu bar icon/menu work identically to the
+      bare-executable dev build.
+- [ ] **11. Launch at Login** (`SMAppService`) — next up, now that the
+      app can be meaningfully packaged and tested.
+
 ## Validating every PR
 
-- CI runs `swift build` from PR 1 onward, and `swift test` from PR 3
-  onward.
+- CI runs `swift build` and builds the `.app` bundle (`Packaging/build-app.sh`)
+  from PR 1/PR 17 onward respectively, and `swift test` from PR 3 onward.
 - Every PR description includes manual verification steps, plus a
   screenshot for anything UI-visible.
 - Branch protection on `main` requires the build to pass before merge.
