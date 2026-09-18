@@ -6,8 +6,13 @@ import SwiftUI
 /// chosen size and position across launches — SwiftUI's Window scene has
 /// no equivalent for this.
 final class PromptWindowController: NSWindowController {
+    // Owned here rather than as @State in PromptView: NSHostingView's
+    // rootView reassignment doesn't reliably reset @State between
+    // presentations, so this is explicitly cleared before each one.
+    private let model = PromptModel()
+
     private let hostingView = NSHostingView(
-        rootView: PromptView(intervalMinutes: 60, onSubmit: { _ in }, onCancel: {})
+        rootView: PromptView(model: PromptModel(), intervalMinutes: 60, onSubmit: { _ in }, onCancel: {})
     )
 
     var onSubmit: ((String) -> Void)?
@@ -46,7 +51,10 @@ final class PromptWindowController: NSWindowController {
     }
 
     private func updateRootView(intervalMinutes: Int) {
+        model.text = ""
+
         hostingView.rootView = PromptView(
+            model: model,
             intervalMinutes: intervalMinutes,
             onSubmit: { [weak self] text in
                 self?.onSubmit?(text)

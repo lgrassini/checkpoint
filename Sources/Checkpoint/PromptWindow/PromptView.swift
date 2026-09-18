@@ -1,15 +1,26 @@
 import SwiftUI
 
+// Owned by the caller (PromptWindowController) rather than PromptView's
+// own @State: NSHostingView's rootView reassignment doesn't reliably reset
+// @State between presentations, so the controller explicitly resets
+// `text` to "" before each presentation instead. Needs to be an
+// ObservableObject (not a plain Binding(get:set:)) so SwiftUI actually
+// re-renders as the user types.
+final class PromptModel: ObservableObject {
+    @Published var text = ""
+}
+
 struct PromptView: View {
+    @ObservedObject var model: PromptModel
+
     let intervalMinutes: Int
     var onSubmit: (String) -> Void
     var onCancel: () -> Void
 
-    @State private var text = ""
     @FocusState private var isFocused: Bool
 
     private var trimmedText: String {
-        text.trimmingCharacters(in: .whitespacesAndNewlines)
+        model.text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     var body: some View {
@@ -17,7 +28,7 @@ struct PromptView: View {
             Text("What did you spend the last \(intervalMinutes) minutes on?")
                 .font(.headline)
 
-            TextEditor(text: $text)
+            TextEditor(text: $model.text)
                 .font(.body)
                 .scrollContentBackground(.hidden)
                 .padding(6)
