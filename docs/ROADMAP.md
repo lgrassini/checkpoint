@@ -157,8 +157,18 @@ from [CLAUDE.md](../CLAUDE.md)).
       Validated: `vtool -show-build` reports `minos 14.0 / sdk 27.0`, the
       signature verifies, and the user confirmed the prompt's
       Skip/Log It buttons now match the native flat-gray/accent styling.
-- [ ] **19. Settings window won't reopen after being closed** — bug found
-      while using the installed app.
+- [x] **19. Settings window won't reopen after being closed** — bug found
+      while using the installed app: SwiftUI's `Settings` scene opened via
+      `NSApp.sendAction(showSettingsWindow:)` worked once, then never
+      again until relaunch. Replaced with `SettingsWindowController`, a
+      plain `NSWindow` hosting `SettingsView` that is hidden rather than
+      released (same pattern as `PromptWindowController`), remembering
+      its position. `CheckpointApp` keeps the SwiftUI lifecycle only for
+      the standard main menu (Edit commands); its `Settings` scene is an
+      inert placeholder whose "Settings…" command (⌘,) is redirected to
+      the new window.
+      Validated manually by the user against the packaged app: the window
+      now reopens after being closed.
 - [ ] **11. Launch at Login** (`SMAppService`) — next up after 19, now
       that the app can be meaningfully packaged and tested.
 

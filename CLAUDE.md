@@ -60,9 +60,12 @@ Settings persist via `UserDefaults`.
     changes (needed for the icon blink; confirmed via logging that the
     underlying state *was* updating correctly, SwiftUI just wasn't
     reflecting it), so this is the "more control" escape hatch.
-  - Settings window follows the standard macOS Settings scene pattern
-    (`Settings {}` scene in SwiftUI, or a standard preferences window in
-    AppKit) — not a custom-chrome window.
+  - Settings window is a standard titled AppKit `NSWindow` owned by
+    `SettingsWindowController` (hosting the SwiftUI `SettingsView`) — not
+    custom chrome. SwiftUI's `Settings` scene was tried first, but opening
+    it from this accessory app worked only once: after closing the window
+    it never reappeared until relaunch. A plain window that's hidden, not
+    released, reopens reliably.
   - Prompt window should feel like a native alert/small panel — system
     fonts, system spacing, standard button placement (default button on the
     right, primary action responds to Return, Escape cancels/dismisses),
@@ -90,13 +93,14 @@ dependencies. Opens and runs directly in Xcode via "Open Package...":
 Checkpoint/
   Package.swift
   Sources/Checkpoint/
-    CheckpointApp.swift    // App entry point (just the Settings scene)
+    CheckpointApp.swift    // App entry point; SwiftUI lifecycle kept only for the main menu (Edit/⌘V)
     AppDelegate.swift      // Menu bar NSStatusItem/NSMenu, icon blink, wiring
     AppState.swift         // Timer logic, interval state, orchestration
     PromptWindow/
       PromptView.swift     // The interval entry prompt UI
     Settings/
-      SettingsView.swift   // Log folder + interval slider
+      SettingsView.swift   // Log folder + interval + notifications
+      SettingsWindowController.swift  // AppKit-owned Settings window
     Logging/
       CheckpointLogger.swift  // File writing, date/filename logic
     Resources/
