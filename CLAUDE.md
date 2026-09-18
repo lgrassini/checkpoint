@@ -102,13 +102,18 @@ Checkpoint/
     Resources/
       Assets.xcassets      // App icon (menu bar icon is an SF Symbol)
   Tests/CheckpointTests/              // Unit tests (added PR 3)
+  Packaging/
+    Info.plist             // Bundle id, version, LSUIElement
+    build-app.sh            // Assembles + ad-hoc signs .build/Checkpoint.app
   CLAUDE.md
 ```
 
 Bundle identifier: `com.warp.Checkpoint`. Code signing: sign-to-run-locally
-for now (no Apple Developer Team). Packaging the built executable into a
-distributable `.app` bundle (Info.plist embedding, icon, bundle assembly) is
-its own later step, not required for local development or CI builds.
+for now (no Apple Developer Team, so `build-app.sh` ad-hoc signs). Run
+`Packaging/build-app.sh` to assemble a real, launchable `.app` bundle at
+`.build/Checkpoint.app` — needed for anything that depends on a proper
+bundle identity (e.g. Launch at Login via `SMAppService`), since the bare
+SwiftPM executable (`swift run`) has no `Info.plist`/bundle of its own.
 
 ## PR sequence
 
