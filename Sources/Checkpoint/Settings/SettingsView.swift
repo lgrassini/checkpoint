@@ -36,6 +36,11 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+
+            Section("Notifications") {
+                Toggle("Play a sound and blink the menu bar icon", isOn: $settings.notificationsEnabled)
+                    .toggleStyle(.checkbox)
+            }
         }
         .padding(20)
         .frame(width: 380)
