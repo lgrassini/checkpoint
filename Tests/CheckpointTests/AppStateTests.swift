@@ -43,9 +43,52 @@ final class AppStateTests: XCTestCase {
         appState.onCheckpointDue = { fireCount += 1 }
 
         scheduler.fire()
+
+        XCTAssertEqual(fireCount, 1)
+    }
+
+    func testAnUnansweredCheckpointIsNotFiredAgain() {
+        var fireCount = 0
+        appState.onCheckpointDue = { fireCount += 1 }
+
+        scheduler.fire()
+        scheduler.fire()
+
+        XCTAssertEqual(fireCount, 1)
+    }
+
+    func testFiringPausesTheCountdownUntilTheCheckpointIsAnswered() {
+        scheduler.fire()
+
+        XCTAssertEqual(scheduler.cancelCount, 1)
+        XCTAssertEqual(scheduler.scheduleCount, 1)
+
+        appState.checkpointAnswered()
+
+        XCTAssertEqual(scheduler.scheduleCount, 2)
+    }
+
+    func testANewCheckpointFiresAfterTheLastOneWasAnswered() {
+        var fireCount = 0
+        appState.onCheckpointDue = { fireCount += 1 }
+
+        scheduler.fire()
+        appState.checkpointAnswered()
         scheduler.fire()
 
         XCTAssertEqual(fireCount, 2)
+    }
+
+    func testChangingTheIntervalWhileWaitingRestartsOnlyOnceAnswered() {
+        scheduler.fire()
+
+        settings.interval = .twentyFiveMinutes
+        XCTAssertEqual(scheduler.scheduleCount, 1)
+
+        appState.checkpointAnswered()
+
+        XCTAssertEqual(scheduler.scheduleCount, 2)
+        XCTAssertEqual(scheduler.scheduledInterval, CheckpointInterval.twentyFiveMinutes.seconds)
     }
 
     func testAnsweringACheckpointRestartsTheCountdown() {
@@ -85,6 +128,8 @@ private final class FakeScheduler: CheckpointScheduling {
 
     func cancel() {
         cancelCount += 1
+        // Like a real cancelled Timer: firing afterwards does nothing.
+        handler = nil
     }
 
     func fire() {
