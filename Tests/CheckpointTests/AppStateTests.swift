@@ -48,6 +48,23 @@ final class AppStateTests: XCTestCase {
         XCTAssertEqual(fireCount, 2)
     }
 
+    func testAnsweringACheckpointRestartsTheCountdown() {
+        XCTAssertEqual(scheduler.scheduleCount, 1)
+
+        appState.checkpointAnswered()
+
+        XCTAssertEqual(scheduler.scheduleCount, 2)
+        XCTAssertEqual(scheduler.scheduledInterval, AppSettings.defaultInterval.seconds)
+    }
+
+    func testRestartingAfterAnIntervalChangeUsesTheNewInterval() {
+        settings.interval = .ninetyMinutes
+
+        appState.checkpointAnswered()
+
+        XCTAssertEqual(scheduler.scheduledInterval, CheckpointInterval.ninetyMinutes.seconds)
+    }
+
     func testCancelsSchedulerOnDeinit() {
         appState = nil
         XCTAssertEqual(scheduler.cancelCount, 1)
@@ -57,9 +74,11 @@ final class AppStateTests: XCTestCase {
 private final class FakeScheduler: CheckpointScheduling {
     private(set) var scheduledInterval: TimeInterval?
     private(set) var cancelCount = 0
+    private(set) var scheduleCount = 0
     private var handler: (() -> Void)?
 
     func schedule(every interval: TimeInterval, _ handler: @escaping () -> Void) {
+        scheduleCount += 1
         scheduledInterval = interval
         self.handler = handler
     }
