@@ -23,6 +23,16 @@ log file.
 - Clicking "Skip" (or Escape), or closing the window via the titlebar
   button (or Cmd+W), both log a `Skipped.` entry in the same format,
   rather than logging nothing.
+- **The prompt never steals focus.** When a checkpoint fires it appears on
+  top (on the current Space, including over full-screen apps) but does not
+  activate Checkpoint or take keyboard focus, so whatever the user is typing
+  in keeps receiving their keystrokes. It's a non-activating floating
+  `NSPanel` shown with `orderFrontRegardless()` — never
+  `NSApp.activate`/`makeKeyAndOrderFront`. Clicking into it makes it key so
+  the user can type without the frontmost app changing. Consequence: the
+  text box is not auto-focused on appearance. The sound and blinking icon
+  are what get the user's attention. (The Settings window, which the user
+  opens deliberately, *does* activate the app.)
 - **Notifications** (opt-out via Settings, on by default): when a
   checkpoint fires,
   - plays `NSSound.beep()` (the user's own configured system alert sound —
@@ -76,8 +86,8 @@ Settings persist via `UserDefaults`.
     fonts, system spacing, standard button placement (default button on the
     right, primary action responds to Return, Escape cancels/dismisses),
     supports Light/Dark mode automatically via system colors.
-  - Respect standard macOS behaviors: window can be moved, prompt shouldn't
-    steal focus aggressively beyond what's needed, app should launch fast
+  - Respect standard macOS behaviors: window can be moved, the prompt never
+    steals focus (see Core behavior), app should launch fast
     and stay lightweight (idle CPU/memory footprint near zero between
     prompts).
 - **Lightweight**: minimal background work — a single timer, no polling

@@ -28,14 +28,24 @@ final class PromptWindowController: NSWindowController, NSWindowDelegate {
     var onWindowClosed: (() -> Void)?
 
     init() {
-        let window = NSWindow(
+        let window = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 360, height: 220),
-            styleMask: [.titled, .closable, .resizable],
+            styleMask: [.titled, .closable, .resizable, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
         window.title = "Checkpoint"
         window.isReleasedWhenClosed = false
+        // A panel so it can be shown without activating Checkpoint (and so
+        // without taking focus from whatever the user is typing in).
+        window.isFloatingPanel = true
+        window.level = .floating
+        // NSPanel hides itself whenever its app is inactive by default —
+        // which is always the case once we stop activating the app.
+        window.hidesOnDeactivate = false
+        // Show on the Space the user is currently in, including over a
+        // full-screen app.
+        window.collectionBehavior = [.moveToActiveSpace, .fullScreenAuxiliary]
         window.contentMinSize = NSSize(width: 320, height: 160)
         window.contentView = hostingView
 
@@ -55,9 +65,13 @@ final class PromptWindowController: NSWindowController, NSWindowDelegate {
 
     func present(intervalMinutes: Int) {
         updateRootView(intervalMinutes: intervalMinutes)
-        NSApp.activate(ignoringOtherApps: true)
-        showWindow(nil)
-        window?.makeKeyAndOrderFront(nil)
+        // Deliberately neither activating the app nor making the window key:
+        // either would take keyboard focus from whatever the user is typing
+        // in when a checkpoint fires. orderFrontRegardless shows the panel on
+        // top without doing either; clicking into it makes it key (it's a
+        // non-activating panel) so they can type without the frontmost app
+        // changing.
+        window?.orderFrontRegardless()
     }
 
     // Fires only for user-initiated closes (titlebar button, Cmd+W) — not

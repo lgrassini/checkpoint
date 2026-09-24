@@ -89,8 +89,9 @@ from [CLAUDE.md](../CLAUDE.md)).
 - [x] **10. Sleep/wake timer behavior** — resolved with no code change:
       Foundation `Timer`'s natural pause-during-sleep/prompt-fire-on-wake
       behavior is good enough. See CLAUDE.md open question 3.
-- [ ] **11. Launch at Login** (`SMAppService`) — confirmed in scope, not
-      yet implemented.
+- [x] **11. Launch at Login** (`SMAppService`) — confirmed in scope, then
+      implemented once the app was packaged; see the full entry under
+      "Packaging & Launch at Login" below.
 - [x] **12. Menu bar icon polish** — resolved by keeping the current
       plain SF Symbol `clock`, no change made. See CLAUDE.md open
       question 6.
@@ -180,6 +181,21 @@ from [CLAUDE.md](../CLAUDE.md)).
       back.
       Validated via 7 unit tests (27 total) and manually by the user
       against the real `/Applications` install.
+
+## Follow-ups from real-world use
+
+- [x] **20. Don't steal focus when the prompt appears** — the prompt used
+      to call `NSApp.activate(ignoringOtherApps:)` + `makeKeyAndOrderFront`,
+      pulling keyboard focus out of whatever the user was typing in when a
+      checkpoint fired. It's now a non-activating floating `NSPanel`
+      (`hidesOnDeactivate = false`, which `NSPanel` would otherwise
+      default to true, hiding it immediately) on the current Space, shown
+      via `orderFrontRegardless()`. Tradeoff: the text box isn't
+      auto-focused; the user clicks into it.
+      Validated: build and 27/27 tests pass; packaged app built and
+      handed to the user to try. Specific results were not reported back,
+      so **unconfirmed**: ⌘V paste while Checkpoint isn't the active app,
+      ⌘Return/Esc in the panel, and behavior over a full-screen app.
 
 ## Validating every PR
 
