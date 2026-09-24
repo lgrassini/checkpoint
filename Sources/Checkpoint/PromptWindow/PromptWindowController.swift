@@ -65,9 +65,13 @@ final class PromptWindowController: NSWindowController, NSWindowDelegate {
 
     func present(intervalMinutes: Int) {
         updateRootView(intervalMinutes: intervalMinutes)
-        NSApp.activate(ignoringOtherApps: true)
-        showWindow(nil)
-        window?.makeKeyAndOrderFront(nil)
+        // Deliberately neither activating the app nor making the window key:
+        // either would take keyboard focus from whatever the user is typing
+        // in when a checkpoint fires. orderFrontRegardless shows the panel on
+        // top without doing either; clicking into it makes it key (it's a
+        // non-activating panel) so they can type without the frontmost app
+        // changing.
+        window?.orderFrontRegardless()
     }
 
     // Fires only for user-initiated closes (titlebar button, Cmd+W) — not
