@@ -19,7 +19,15 @@ log file.
     a blank line. Each entry is written as `[HH:mm] \n<entry text>\n\n\n` —
     a blank line after the timestamp, two trailing blank lines separating it
     from the next entry.
-  - The prompt window closes and the timer resets for the next interval.
+  - The prompt window closes and the countdown restarts: the next
+    checkpoint is a full interval after the user dealt with this one (logged,
+    skipped, or closed it) — not on a fixed cadence from launch.
+- **The countdown pauses while a checkpoint is unanswered.** A prompt that's
+  ignored stays open and no further checkpoint fires (so two can never stack
+  and wipe a half-typed entry); the countdown resumes when it's answered.
+  An interval changed in Settings meanwhile takes effect at that point.
+  (The "Simulate Checkpoint Now" debug item shares the path, so closing a
+  simulated prompt also restarts the countdown.)
 - Clicking "Skip" (or Escape), or closing the window via the titlebar
   button (or Cmd+W), both log a `Skipped.` entry in the same format,
   rather than logging nothing.
