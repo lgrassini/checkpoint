@@ -86,8 +86,8 @@ Settings persist via `UserDefaults`.
     fonts, system spacing, standard button placement (default button on the
     right, primary action responds to Return, Escape cancels/dismisses),
     supports Light/Dark mode automatically via system colors.
-  - Respect standard macOS behaviors: window can be moved, prompt shouldn't
-    steal focus aggressively beyond what's needed, app should launch fast
+  - Respect standard macOS behaviors: window can be moved, the prompt never
+    steals focus (see Core behavior), app should launch fast
     and stay lightweight (idle CPU/memory footprint near zero between
     prompts).
 - **Lightweight**: minimal background work — a single timer, no polling

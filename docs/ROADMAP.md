@@ -89,8 +89,9 @@ from [CLAUDE.md](../CLAUDE.md)).
 - [x] **10. Sleep/wake timer behavior** — resolved with no code change:
       Foundation `Timer`'s natural pause-during-sleep/prompt-fire-on-wake
       behavior is good enough. See CLAUDE.md open question 3.
-- [ ] **11. Launch at Login** (`SMAppService`) — confirmed in scope, not
-      yet implemented.
+- [x] **11. Launch at Login** (`SMAppService`) — confirmed in scope, then
+      implemented once the app was packaged; see the full entry under
+      "Packaging & Launch at Login" below.
 - [x] **12. Menu bar icon polish** — resolved by keeping the current
       plain SF Symbol `clock`, no change made. See CLAUDE.md open
       question 6.
