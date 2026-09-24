@@ -32,8 +32,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         promptWindowController.onFirstKeystroke = { [weak self] in
             self?.stopBlinking()
         }
+        // Fires however the prompt closes (Log It, Skip, titlebar), so the
+        // next checkpoint is always a full interval after the last one was
+        // dealt with — not after whenever the countdown happened to start.
         promptWindowController.onWindowClosed = { [weak self] in
             self?.stopBlinking()
+            self?.appState.checkpointAnswered()
         }
     }
 

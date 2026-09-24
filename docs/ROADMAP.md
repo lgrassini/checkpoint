@@ -197,6 +197,22 @@ from [CLAUDE.md](../CLAUDE.md)).
       so **unconfirmed**: ⌘V paste while Checkpoint isn't the active app,
       ⌘Return/Esc in the panel, and behavior over a full-screen app.
 
+- [x] **21. Next checkpoint is one interval after the last answer** — the
+      timer was a fixed-cadence repeating timer that answering a prompt never
+      touched: with a 40-minute interval, a checkpoint at :40 answered at :65
+      was followed by another at :80, only 15 minutes after the entry.
+      `AppState` now restarts the countdown from `checkpointAnswered()`
+      (called from `onWindowClosed`, which covers Log It, Skip and titlebar
+      close), and pauses it while a checkpoint is unanswered so a second
+      prompt can't stack on the first and wipe a half-typed entry (which the
+      old repeating timer allowed). CLAUDE.md had always said "the timer
+      resets"; that was never actually implemented.
+      Validated via unit tests (35 total): a fake scheduler covers the
+      restart/pause/resume logic including the `@Published` willSet
+      pitfall, and real-`Timer` tests confirm cancelling from inside the
+      handler stops it. **Not** observed over a real full interval (minimum
+      25 minutes) — worth watching in daily use.
+
 ## Validating every PR
 
 - CI runs `swift build` and builds the `.app` bundle (`Packaging/build-app.sh`)
