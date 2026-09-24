@@ -181,6 +181,21 @@ from [CLAUDE.md](../CLAUDE.md)).
       Validated via 7 unit tests (27 total) and manually by the user
       against the real `/Applications` install.
 
+## Follow-ups from real-world use
+
+- [x] **20. Don't steal focus when the prompt appears** — the prompt used
+      to call `NSApp.activate(ignoringOtherApps:)` + `makeKeyAndOrderFront`,
+      pulling keyboard focus out of whatever the user was typing in when a
+      checkpoint fired. It's now a non-activating floating `NSPanel`
+      (`hidesOnDeactivate = false`, which `NSPanel` would otherwise
+      default to true, hiding it immediately) on the current Space, shown
+      via `orderFrontRegardless()`. Tradeoff: the text box isn't
+      auto-focused; the user clicks into it.
+      Validated: build and 27/27 tests pass; packaged app built and
+      handed to the user to try. Specific results were not reported back,
+      so **unconfirmed**: ⌘V paste while Checkpoint isn't the active app,
+      ⌘Return/Esc in the panel, and behavior over a full-screen app.
+
 ## Validating every PR
 
 - CI runs `swift build` and builds the `.app` bundle (`Packaging/build-app.sh`)
